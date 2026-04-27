@@ -41,3 +41,10 @@ jobs:
         with:
           name: jacoco-report-${{ matrix.os }} # Đặt tên file đính kèm kèm theo tên HĐH
           path: target/site/jacoco/
+
+      - name: Run Checkstyle Review
+        uses: dbelyaev/action-checkstyle@master
+        if: github.event_name == 'pull_request' # Chỉ chạy khi có Pull Request
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            reporter: github-pr-review
