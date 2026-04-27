@@ -28,7 +28,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
+          cache: maven # linh hồn bài 6
 
       # 3. Chạy test và đo coverage (Bắt buộc dùng verify để JaCoCo kiểm tra luật 80%)
       - name: Build and Test with Maven
