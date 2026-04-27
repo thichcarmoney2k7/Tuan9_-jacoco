@@ -1,0 +1,43 @@
+name: Java CI with Maven and JaCoCo
+
+# Kích hoạt khi có code đẩy lên hoặc tạo Pull Request
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    # Chạy trên 3 hệ điều hành và không hủy ngang nếu có 1 máy lỗi
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # 1. Kéo code từ GitHub về máy chủ
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Cài đặt Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # 3. Chạy test và đo coverage (Bắt buộc dùng verify để JaCoCo kiểm tra luật 80%)
+      - name: Build and Test with Maven
+        run: mvn clean verify
+
+      # 4. Upload báo cáo JaCoCo lên GitHub để tải về xem
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v4
+        if: always() # Luôn upload báo cáo kể cả khi test fail (coverage < 80%)
+        with:
+          name: jacoco-report-${{ matrix.os }} # Đặt tên file đính kèm kèm theo tên HĐH
+          path: target/site/jacoco/
